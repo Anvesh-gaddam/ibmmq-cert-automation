@@ -1,0 +1,67 @@
+---
+
+- name: IBM MQ Certificate Renewal - Rollback
+  hosts: failed_hosts
+  gather_facts: true
+
+  tasks:
+
+    ######################################################################
+    # STEP 1 — Validate backup directory exists
+    ######################################################################
+    - name: Check backup directory exists
+      stat:
+        path: "{{ backup_dir }}"
+      register: backup_stat
+
+    - fail:
+        msg: "Backup directory not found. Cannot rollback: {{ backup_dir }}"
+      when: not backup_stat.stat.exists
+
+
+    ######################################################################
+    # STEP 2 — Restore KDB file from backup
+    ######################################################################
+    - name: Restore KDB file
+      copy:
+        src: "{{ backup_dir }}/{{ kdb_name }}.kdb"
+        dest: "{{ kdb_file }}"
+        remote_src: true
+        mode: "0640"
+        owner: mqm
+        group: mqm
+
+
+    ######################################################################
+    # STEP 3 — Restore STH file from backup
+    ######################################################################
+    - name: Restore STH file
+      copy:
+        src: "{{ backup_dir }}/{{ kdb_name }}.sth"
+        dest: "{{ sth_file }}"
+        remote_src: true
+        mode: "0640"
+        owner: mqm
+        group: mqm
+
+
+    ######################################################################
+    # STEP 4 — Refresh MQ SSL cache after rollback
+    ######################################################################
+    - name: Refresh MQ SSL cache after rollback
+      shell: echo "refresh security type(ssl)" | runmqsc {{ qmgr_name }}
+      register: rollback_refresh
+
+    - fail:
+        msg: "Rollback refresh failed: {{ rollback_refresh.stdout }}"
+      when: "'refreshed' not in rollback_refresh.stdout | lower"
+
+
+    ######################################################################
+    # STEP 5 — Report rollback success
+    ######################################################################
+    - name: Rollback summary
+      debug:
+        msg: >
+          Rollback successful on {{ inventory_hostname }}.
+          Keystore restored from: {{ backup_dir }}

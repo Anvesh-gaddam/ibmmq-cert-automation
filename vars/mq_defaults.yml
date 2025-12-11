@@ -1,0 +1,2 @@
+mq_ssl_cache_command: "refresh security type(ssl)"
+mq_error_log: "/var/mqm/qmgrs/{{ qmgr_name }}/errors/AMQERR01.LOG"

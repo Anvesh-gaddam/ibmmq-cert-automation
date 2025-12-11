@@ -1,0 +1,4 @@
+---
+
+- name: Import renewed certificate into MQ KDB
+  include_tasks: import_cert.yml

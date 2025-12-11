@@ -1,0 +1,9 @@
+---
+
+- name: IBM MQ Certificate Renewal
+  hosts: all_servers
+  gather_facts: true
+
+  roles:
+    - common_cert_ops
+    - ibmmq_cert_renewal

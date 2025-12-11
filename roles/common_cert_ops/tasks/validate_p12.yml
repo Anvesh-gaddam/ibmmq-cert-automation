@@ -1,0 +1,10 @@
+---
+
+- name: Validate certificate is not corrupted
+  stat:
+    path: "{{ downloaded_p12 }}"
+  register: p12_stat
+
+- fail:
+    msg: "P12 file too small or corrupted!"
+  when: p12_stat.stat.size < 300

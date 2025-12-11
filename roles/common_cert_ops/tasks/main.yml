@@ -1,0 +1,7 @@
+---
+
+- include_tasks: download_p12.yml
+- include_tasks: validate_p12.yml
+- include_tasks: backup_kdb.yml
+- include_tasks: tls_test.yml
+- include_tasks: cleanup.yml

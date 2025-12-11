@@ -1,0 +1,11 @@
+---
+
+- name: Run TLS handshake test
+  shell: |
+    timeout 10 openssl s_client -connect {{ inventory_hostname }}:{{ host_port }} -showcerts </dev/null 2>&1
+  register: tls_output
+  changed_when: false
+
+- fail:
+    msg: "TLS handshake failed!"
+  when: "'Verify return code: 0' not in tls_output.stdout"

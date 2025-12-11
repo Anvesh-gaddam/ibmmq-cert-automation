@@ -1,0 +1,20 @@
+---
+
+- name: Create secure temp directory
+  tempfile:
+    state: directory
+    prefix: "mq_cert_"
+  register: tmpdir
+
+- set_fact:
+    temp_dir: "{{ tmpdir.path }}"
+    downloaded_p12: "{{ tmpdir.path }}/new_cert.p12"
+
+- name: Download new certificate from Artifactory
+  get_url:
+    url: "{{ artifactory_url | trim('/') }}/{{ artifactory_repo }}/{{ artifactory_path | trim('/') }}"
+    dest: "{{ downloaded_p12 }}"
+    url_password: "{{ artifactory_token }}"
+    mode: "0600"
+    validate_certs: true
+  no_log: true

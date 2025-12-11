@@ -1,0 +1,3 @@
+artifactory_url: "https://artifactory.company.com/artifactory"
+artifactory_repo: "mq-certs"
+artifactory_path: "MQ/{{ qmgr_name }}/{{ cert_label }}.p12"

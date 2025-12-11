@@ -1,0 +1,14 @@
+qmgr_name: QM1
+kdb_name: key
+cert_label: ibmwebspheremq
+host_port: 1414
+
+ssl_dir: "/var/mqm/qmgrs/{{ qmgr_name }}/ssl"
+kdb_file: "{{ ssl_dir }}/{{ kdb_name }}.kdb"
+sth_file: "{{ ssl_dir }}/{{ kdb_name }}.sth"
+
+p12_dest: "{{ ssl_dir }}/{{ cert_label }}.p12"
+p12_stash: "{{ ssl_dir }}/{{ cert_label }}.sth"
+
+backup_dir: "{{ ssl_dir }}/backup_{{ ansible_date_time.iso8601 }}"
+

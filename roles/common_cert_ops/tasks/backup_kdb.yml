@@ -1,0 +1,16 @@
+---
+
+- name: Create backup directory
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Backup KDB and STH
+  copy:
+    src: "{{ item }}"
+    dest: "{{ backup_dir }}/"
+    remote_src: true
+  loop:
+    - "{{ kdb_file }}"
+    - "{{ sth_file }}"

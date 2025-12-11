@@ -1,0 +1,33 @@
+---
+
+# Step 7: Remove old label (safe ignore)
+- name: Delete old cert label
+  command: >
+    runmqakm -cert -delete
+    -db {{ kdb_file }} -stashed
+    -label {{ cert_label }}
+  ignore_errors: true
+
+# Step 8: Import new cert
+- name: Import new cert into MQ KDB
+  command: >
+    runmqakm -cert -import
+    -db {{ p12_dest }} -type pkcs12 -stashed
+    -label {{ cert_label }}
+    -target {{ kdb_file }} -target_type cms -target_stashed
+    -new_label {{ cert_label }}
+  register: import_result
+  no_log: true
+
+- fail:
+    msg: "Certificate import failed: {{ import_result.stderr | default(import_result.stdout) }}"
+  when: import_result.rc != 0
+
+# Step 9: Refresh SSL cache
+- name: Refresh SSL cache
+  shell: echo "refresh security type(ssl)" | runmqsc {{ qmgr_name }}
+  register: ssl_refresh
+
+- fail:
+    msg: "SSL cache refresh failed: {{ ssl_refresh.stdout }}"
+  when: "'refreshed' not in ssl_refresh.stdout | lower"
