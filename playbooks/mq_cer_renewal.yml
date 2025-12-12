@@ -2,7 +2,9 @@
 
 - name: IBM MQ Certificate Renewal
   hosts: all_servers
+  serial: 1
   gather_facts: true
+  max_fail_percentage: 10
 
   roles:
     - common_cert_ops
